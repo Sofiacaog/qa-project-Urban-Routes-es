@@ -16,6 +16,8 @@ class TestUrbanRoutes:
     def setup_method(self):
         self.driver.get(data.urban_routes_url)
         self.page = UrbanRoutesPage(self.driver)
+
+        # flujo base requerido por la app
         self.page.set_route(data.address_from, data.address_to)
         self.page.click_request_taxi()
         self.page.select_comfort()
@@ -35,39 +37,48 @@ class TestUrbanRoutes:
         self.page.fill_phone_number(data.phone_number)
         code = retrieve_phone_code(self.driver)
         self.page.enter_phone_code(code)
-        assert True
+
+        assert self.page.is_phone_added()
 
     # 4️⃣ Tarjeta
     def test_add_card(self):
+        self.page.open_payment_modal()
         self.page.click_add_card()
         self.page.fill_card_info(data.card_number, data.card_code)
-        assert True
+
+        assert self.page.is_card_added()
 
     # 5️⃣ Confirmación tarjeta
     def test_card_code_confirmation(self):
+        self.page.open_payment_modal()
         self.page.click_add_card()
         self.page.fill_card_info(data.card_number, data.card_code)
-        assert True
+
+        assert self.page.is_card_added()
 
     # 6️⃣ Mensaje conductor
     def test_driver_message(self):
         self.page.set_driver_message(data.message_for_driver)
-        assert True
+
+        assert self.page.get_driver_message() == data.message_for_driver
 
     # 7️⃣ Manta
     def test_enable_blanket(self):
         self.page.enable_blanket()
-        assert True
+
+        assert self.page.is_blanket_enabled()
 
     # 8️⃣ Helados
     def test_add_icecream(self):
         self.page.add_icecream(2)
+
         assert self.page.get_icecream_count() == "2"
 
     # 9️⃣ Modal búsqueda taxi
     def test_complete_order(self):
         self.page.add_icecream(2)
         self.page.confirm_taxi()
+
         assert self.page.wait_for_order_modal()
 
     @classmethod
